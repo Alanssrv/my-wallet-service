@@ -15,8 +15,8 @@ public class Entries
     public int CategoryId { get; set; }
     [BsonElement("description")]
     public string? Description { get; set; }
-    [BsonElement("origin")]
-    public OriginType Origin { get; set; }
+    [BsonElement("originType")]
+    public OriginType OriginType { get; set; }
     [BsonElement("tagIds")]
     public List<int>? TagIds { get; set; }
 }
