@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace MyWallet.Models;
 
-public class Tags
+public class Tag
 {
     [BsonId]
     public ObjectId Id { get; set; }

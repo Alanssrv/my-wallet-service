@@ -18,6 +18,7 @@ builder.Services
 builder.Services.AddScoped<MongoDbContext>();
 builder.Services.AddScoped<MongoRepository>();
 builder.Services.AddScoped<EntryService>();
+builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<TagService>();
 builder.Services.AddScoped<LimitService>();

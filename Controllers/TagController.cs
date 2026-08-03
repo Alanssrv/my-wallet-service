@@ -24,7 +24,7 @@ public class TagController : ControllerBase
     }
 
     [HttpPost("tags")]
-    public async Task<IActionResult> AddTag([FromBody] Tags tag)
+    public async Task<IActionResult> AddTag([FromBody] Tag tag)
     {
         if (tag == null)
         {
@@ -36,7 +36,7 @@ public class TagController : ControllerBase
     }
 
     [HttpPut("tags/{id}")]
-    public async Task<IActionResult> UpdateTag(string id, [FromBody] Tags tag)
+    public async Task<IActionResult> UpdateTag(string id, [FromBody] Tag tag)
     {
         if (tag == null)
         {

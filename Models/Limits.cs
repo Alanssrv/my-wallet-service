@@ -3,16 +3,23 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace MyWallet.Models;
 
-public class Limits
+public class Limit
 {
     [BsonId]
     public ObjectId Id { get; set; }
+
+    [BsonElement("category")]
+    public ObjectId Category { get; set; }
+
     [BsonElement("type")]
     public LimitType Type { get; set; }
-    [BsonElement("alertValue")]
-    public decimal AlertValue { get; set; }
+
     [BsonElement("warningValue")]
     public decimal WarningValue { get; set; }
-    [BsonElement("maxValue")]
-    public decimal MaxValue { get; set; }
+
+    [BsonElement("cautionValue")]
+    public decimal CautionValue { get; set; }
+
+    [BsonElement("criticalValue")]
+    public decimal CriticalValue { get; set; }
 }

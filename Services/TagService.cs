@@ -13,11 +13,11 @@ public class TagService
         _mongoRepository = mongoRepository;
     }
 
-    public async Task<IEnumerable<Tags>> GetTagsAsync() => await _mongoRepository.GetTagsAsync();
+    public async Task<IEnumerable<Tag>> GetTagsAsync() => await _mongoRepository.GetTagsAsync();
 
-    public async Task AddTagAsync(Tags tag) => await _mongoRepository.AddTagAsync(tag);
+    public async Task AddTagAsync(Tag tag) => await _mongoRepository.AddTagAsync(tag);
 
-    public async Task<bool> UpdateTagAsync(ObjectId id, Tags tag) => await _mongoRepository.UpdateTagAsync(id, tag);
+    public async Task<bool> UpdateTagAsync(ObjectId id, Tag tag) => await _mongoRepository.UpdateTagAsync(id, tag);
 
     public async Task<bool> DeleteTagAsync(ObjectId id) => await _mongoRepository.DeleteTagAsync(id);
 }

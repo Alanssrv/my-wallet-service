@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace MyWallet.Models;
 
-public class Categories
+public class Category
 {
     [BsonId]
     public ObjectId Id { get; set; }

@@ -21,7 +21,7 @@ public class EntryController : ControllerBase
     }
 
     [HttpPost("entries")]
-    public async Task<IActionResult> AddEntry([FromBody] Entries entry)
+    public async Task<IActionResult> AddEntry([FromBody] Entry entry)
     {
         if (entry == null)
         {
@@ -32,7 +32,7 @@ public class EntryController : ControllerBase
     }
 
     [HttpPut("entries/{id}")]
-    public async Task<IActionResult> UpdateEntry(string id, [FromBody] Entries entry)
+    public async Task<IActionResult> UpdateEntry(string id, [FromBody] Entry entry)
     {
         if (entry == null)
         {
@@ -81,19 +81,5 @@ public class EntryController : ControllerBase
 
         var entries = await _entryService.GetEntriesByMonthAsync(year, month);
         return Ok(entries);
-    }
-
-    [HttpGet("entries/summary/origin")]
-    public async Task<IActionResult> GetEntriesSummaryByOrigin()
-    {
-        var summary = await _entryService.GetEntriesSummaryByOriginAsync();
-        return Ok(summary);
-    }
-
-    [HttpGet("entries/summary/origin/by-month")]
-    public async Task<IActionResult> GetEntriesMonthlySummaryByOrigin()
-    {
-        var summary = await _entryService.GetEntriesMonthlySummaryByOriginAsync();
-        return Ok(summary);
     }
 }

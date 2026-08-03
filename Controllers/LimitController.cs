@@ -24,7 +24,7 @@ public class LimitController : ControllerBase
     }
 
     [HttpPost("limits")]
-    public async Task<IActionResult> AddLimit([FromBody] Limits limit)
+    public async Task<IActionResult> AddLimit([FromBody] Limit limit)
     {
         if (limit == null)
         {
@@ -36,7 +36,7 @@ public class LimitController : ControllerBase
     }
 
     [HttpPut("limits/{id}")]
-    public async Task<IActionResult> UpdateLimit(string id, [FromBody] Limits limit)
+    public async Task<IActionResult> UpdateLimit(string id, [FromBody] Limit limit)
     {
         if (limit == null)
         {

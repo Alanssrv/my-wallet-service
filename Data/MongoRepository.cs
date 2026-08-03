@@ -10,27 +10,34 @@ public class MongoRepository
     #region Collections
 
     private readonly MongoDbContext _mongoDbContext;
-    private readonly IMongoCollection<Categories> _categoriesCollection;
-    private readonly IMongoCollection<Tags> _tagsCollection;
-    private readonly IMongoCollection<Limits> _limitsCollection;
-    private readonly IMongoCollection<Entries> _entriesCollection;
+    private readonly IMongoCollection<Category> _categoriesCollection;
+    private readonly IMongoCollection<Models.Tag> _tagsCollection;
+    private readonly IMongoCollection<Limit> _limitsCollection;
+    private readonly IMongoCollection<Entry> _entriesCollection;
+    private readonly IMongoCollection<Account> _accountsCollection;
 
     #endregion
 
     public MongoRepository(MongoDbContext mongoDbContext)
     {
         _mongoDbContext = mongoDbContext;
-        _categoriesCollection = _mongoDbContext.GetCollection<Categories>("categories");
-        _tagsCollection = _mongoDbContext.GetCollection<Tags>("tags");
-        _limitsCollection = _mongoDbContext.GetCollection<Limits>("limits");
-        _entriesCollection = _mongoDbContext.GetCollection<Entries>("money-entries");
+        _categoriesCollection = _mongoDbContext.GetCollection<Category>("categories");
+        _tagsCollection = _mongoDbContext.GetCollection<Models.Tag>("tags");
+        _limitsCollection = _mongoDbContext.GetCollection<Limit>("limits");
+        _entriesCollection = _mongoDbContext.GetCollection<Entry>("money-entries");
+        _accountsCollection = _mongoDbContext.GetCollection<Account>("accounts");
     }
 
     #region Categories
 
-    public async Task<PaginatedResult<Categories>> GetCategoriesAsync(int pageSize = 10, int index = 0)
+    public async Task<Category?> GetCategoryByIdAsync(ObjectId id)
     {
-        var filter = Builders<Categories>.Filter.Empty;
+        return await _categoriesCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+    }
+
+    public async Task<PaginatedResult<Category>> GetCategoriesAsync(int pageSize = 10, int index = 0)
+    {
+        var filter = Builders<Category>.Filter.Empty;
         var countTask = _categoriesCollection.CountDocumentsAsync(filter);
         var dataTask = _categoriesCollection
             .Find(filter)
@@ -40,19 +47,19 @@ public class MongoRepository
 
         await Task.WhenAll(countTask, dataTask);
 
-        return new PaginatedResult<Categories>
+        return new PaginatedResult<Category>
         {
             Count = countTask.Result,
             Data = dataTask.Result
         };
     }
 
-    public async Task AddCategoryAsync(Categories document)
+    public async Task AddCategoryAsync(Category document)
     {
         await _categoriesCollection.InsertOneAsync(document);
     }
 
-    public async Task<bool> UpdateCategoryAsync(ObjectId id, Categories document)
+    public async Task<bool> UpdateCategoryAsync(ObjectId id, Category document)
     {
         var result = await _categoriesCollection.ReplaceOneAsync(x => x.Id == id, document);
         return result.IsAcknowledged && result.ModifiedCount > 0;
@@ -68,17 +75,17 @@ public class MongoRepository
 
     #region Tags
 
-    public async Task<IEnumerable<Tags>> GetTagsAsync()
+    public async Task<IEnumerable<Models.Tag>> GetTagsAsync()
     {
-        return await _tagsCollection.Find(Builders<Tags>.Filter.Empty).ToListAsync();
+        return await _tagsCollection.Find(Builders<Models.Tag>.Filter.Empty).ToListAsync();
     }
 
-    public async Task AddTagAsync(Tags document)
+    public async Task AddTagAsync(Models.Tag document)
     {
         await _tagsCollection.InsertOneAsync(document);
     }
 
-    public async Task<bool> UpdateTagAsync(ObjectId id, Tags document)
+    public async Task<bool> UpdateTagAsync(ObjectId id, Models.Tag document)
     {
         var result = await _tagsCollection.ReplaceOneAsync(x => x.Id == id, document);
         return result.IsAcknowledged && result.ModifiedCount > 0;
@@ -94,9 +101,9 @@ public class MongoRepository
 
     #region Limits
 
-    public async Task<PaginatedResult<Limits>> GetLimitsAsync(int pageSize = 10, int index = 0)
+    public async Task<PaginatedResult<Limit>> GetLimitsAsync(int pageSize = 10, int index = 0)
     {
-        var filter = Builders<Limits>.Filter.Empty;
+        var filter = Builders<Limit>.Filter.Empty;
         var countTask = _limitsCollection.CountDocumentsAsync(filter);
         var dataTask = _limitsCollection
             .Find(filter)
@@ -106,19 +113,19 @@ public class MongoRepository
 
         await Task.WhenAll(countTask, dataTask);
 
-        return new PaginatedResult<Limits>
+        return new PaginatedResult<Limit>
         {
             Count = countTask.Result,
             Data = dataTask.Result
         };
     }
 
-    public async Task AddLimitAsync(Limits document)
+    public async Task AddLimitAsync(Limit document)
     {
         await _limitsCollection.InsertOneAsync(document);
     }
 
-    public async Task<bool> UpdateLimitAsync(ObjectId id, Limits document)
+    public async Task<bool> UpdateLimitAsync(ObjectId id, Limit document)
     {
         var result = await _limitsCollection.ReplaceOneAsync(x => x.Id == id, document);
         return result.IsAcknowledged && result.ModifiedCount > 0;
@@ -134,9 +141,9 @@ public class MongoRepository
 
     #region Entries
 
-    public async Task<PaginatedResult<Entries>> GetEntriesAsync(int pageSize = 10, int index = 0)
+    public async Task<PaginatedResult<Entry>> GetEntriesAsync(int pageSize = 10, int index = 0)
     {
-        var filter = Builders<Entries>.Filter.Empty;
+        var filter = Builders<Entry>.Filter.Empty;
         var countTask = _entriesCollection.CountDocumentsAsync(filter);
         var dataTask = _entriesCollection
             .Find(filter)
@@ -146,19 +153,19 @@ public class MongoRepository
 
         await Task.WhenAll(countTask, dataTask);
 
-        return new PaginatedResult<Entries>
+        return new PaginatedResult<Entry>
         {
             Count = countTask.Result,
             Data = dataTask.Result
         };
     }
 
-    public async Task AddEntryAsync(Entries document)
+    public async Task AddEntryAsync(Entry document)
     {
         await _entriesCollection.InsertOneAsync(document);
     }
 
-    public async Task<bool> UpdateEntryAsync(ObjectId id, Entries document)
+    public async Task<bool> UpdateEntryAsync(ObjectId id, Entry document)
     {
         var result = await _entriesCollection.ReplaceOneAsync(x => x.Id == id, document);
         return result.IsAcknowledged && result.ModifiedCount > 0;
@@ -170,7 +177,12 @@ public class MongoRepository
         return result.IsAcknowledged && result.DeletedCount > 0;
     }
 
-    public async Task<IEnumerable<Entries>> GetEntriesByMonthAsync(int year, int month)
+    public async Task<Entry?> GetEntryByIdAsync(ObjectId id)
+    {
+        return await _entriesCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+    }
+
+    public async Task<IEnumerable<Entry>> GetEntriesByMonthAsync(int year, int month)
     {
         var start = new DateTime(year, month, 1);
         var end = start.AddMonths(1);
@@ -180,40 +192,44 @@ public class MongoRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<OriginEntriesSummary>> GetEntriesSummaryByOriginAsync()
-    {
-        var entries = await _entriesCollection.Find(Builders<Entries>.Filter.Empty).ToListAsync();
+    #endregion
 
-        return entries
-            .GroupBy(x => x.OriginType)
-            .Select(group => new OriginEntriesSummary
-            {
-                Origin = group.Key,
-                Income = group.Where(x => x.Value >= 0).Sum(x => x.Value),
-                Expense = group.Where(x => x.Value < 0).Sum(x => Math.Abs(x.Value))
-            })
-            .OrderBy(x => x.Origin)
-            .ToList();
+    #region Accounts
+
+    public async Task<PaginatedResult<Account>> GetAccountsAsync(int pageSize = 10, int index = 0)
+    {
+        var filter = Builders<Account>.Filter.Empty;
+        var countTask = _accountsCollection.CountDocumentsAsync(filter);
+        var dataTask = _accountsCollection
+            .Find(filter)
+            .SortByDescending(x => x.Reference)
+            .Skip(pageSize * index)
+            .Limit(pageSize)
+            .ToListAsync();
+
+        await Task.WhenAll(countTask, dataTask);
+
+        return new PaginatedResult<Account>
+        {
+            Count = countTask.Result,
+            Data = dataTask.Result
+        };
     }
 
-    public async Task<IEnumerable<OriginMonthlyEntriesSummary>> GetEntriesMonthlySummaryByOriginAsync()
+    public async Task<Account?> GetAccountByReferenceAsync(DateTime? reference)
     {
-        var entries = await _entriesCollection.Find(Builders<Entries>.Filter.Empty).ToListAsync();
+        return await _accountsCollection.Find(x => x.Reference == reference).FirstOrDefaultAsync();
+    }
 
-        return entries
-            .GroupBy(x => new { x.Date.Year, x.Date.Month, x.OriginType })
-            .Select(group => new OriginMonthlyEntriesSummary
-            {
-                Year = group.Key.Year,
-                Month = group.Key.Month,
-                Origin = group.Key.Origin,
-                Income = group.Where(x => x.Value >= 0).Sum(x => x.Value),
-                Expense = group.Where(x => x.Value < 0).Sum(x => Math.Abs(x.Value))
-            })
-            .OrderBy(x => x.Year)
-            .ThenBy(x => x.Month)
-            .ThenBy(x => x.Origin)
-            .ToList();
+    public async Task AddAccountAsync(Account document)
+    {
+        await _accountsCollection.InsertOneAsync(document);
+    }
+
+    public async Task<bool> UpdateAccountAsync(ObjectId id, Account document)
+    {
+        var result = await _accountsCollection.ReplaceOneAsync(x => x.Id == id, document);
+        return result.IsAcknowledged && result.ModifiedCount > 0;
     }
 
     #endregion

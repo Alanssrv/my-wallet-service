@@ -24,7 +24,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost("categories")]
-    public async Task<IActionResult> AddCategory([FromBody] Categories category)
+    public async Task<IActionResult> AddCategory([FromBody] Category category)
     {
         if (category == null)
         {
@@ -36,7 +36,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("categories/{id}")]
-    public async Task<IActionResult> UpdateCategory(string id, [FromBody] Categories category)
+    public async Task<IActionResult> UpdateCategory(string id, [FromBody] Category category)
     {
         if (category == null)
         {
